@@ -64,4 +64,32 @@ public class AppointmentDAO {
         }
         return list;
     }
+    // 3. Method to Get a Single Appointment by ID (For Printing the Bill)
+    public Appointment getAppointmentById(int id) {
+        Appointment app = null;
+        String query = "SELECT a.*, t.treatment_name FROM appointments a JOIN treatments t ON a.treatment_id = t.treatment_id WHERE a.appointment_no = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(query)) {
+
+            pst.setInt(1, id);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    app = new Appointment();
+                    app.setAppointmentNo(rs.getInt("appointment_no"));
+                    app.setPatientName(rs.getString("patient_name"));
+                    app.setAddress(rs.getString("address"));
+                    app.setContactNumber(rs.getString("contact_number"));
+                    app.setDentistName(rs.getString("dentist_name"));
+                    app.setTreatmentName(rs.getString("treatment_name"));
+                    app.setAppointmentDate(rs.getDate("appointment_date"));
+                    app.setAppointmentTime(rs.getTime("appointment_time"));
+                    app.setTotalCost(rs.getDouble("total_cost"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return app;
+    }
 }

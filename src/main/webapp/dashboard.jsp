@@ -63,6 +63,19 @@
         .btn-print:hover { background: #e65100; }
         .footer { text-align: center; padding: 20px; color: #607d8b; font-size: 0.85rem; font-weight: 500; background: #ffffff; border-top: 1px solid #eceff1; }
     </style>
+    <% if ("success".equals(request.getParameter("login"))) { %>
+        <script>
+            window.addEventListener('DOMContentLoaded', (event) => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Login Successful!',
+                    text: 'Welcome back to Sunrise Dental Clinic Portal.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            });
+        </script>
+        <% } %>
 </head>
 <body>
     <div class="navbar">
@@ -106,7 +119,7 @@
             <a href="add_appointment.jsp" class="card">
                 <h3>+ New Appointment</h3><p>Register a new patient securely</p>
             </a>
-            <a href="#" class="card" style="border-top-color: #29b6f6; color: #0277bd;">
+            <a href="patients_hub.jsp" class="card" style="border-top-color: #29b6f6; color: #0277bd;">
                 <h3>Patients Hub</h3><p>View & manage patient records</p>
             </a>
             <a href="help.jsp" class="card" style="border-top-color: #9ccc65; color: #558b2f;">

@@ -92,4 +92,44 @@ public class AppointmentDAO {
         }
         return app;
     }
+    // Method to Delete Patient Appointment Record
+    public boolean deleteAppointment(int id) {
+        boolean success = false;
+        String query = "DELETE FROM appointments WHERE appointment_no = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(query)) {
+            pst.setInt(1, id);
+            if (pst.executeUpdate() > 0) success = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return success;
+    }
+
+    // Method to Update Existing Appointment
+    public boolean updateAppointment(Appointment app) {
+        boolean isSuccess = false;
+        String query = "UPDATE appointments SET patient_name = ?, address = ?, contact_number = ?, dentist_name = ?, treatment_id = ?, appointment_date = ?, appointment_time = ? WHERE appointment_no = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(query)) {
+
+            pst.setString(1, app.getPatientName());
+            pst.setString(2, app.getAddress());
+            pst.setString(3, app.getContactNumber());
+            pst.setString(4, app.getDentistName());
+            pst.setInt(5, app.getTreatmentId());
+            pst.setDate(6, app.getAppointmentDate());
+            pst.setTime(7, app.getAppointmentTime());
+            pst.setInt(8, app.getAppointmentNo());
+
+            if (pst.executeUpdate() > 0) isSuccess = true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isSuccess;
+    }
+
+
 }

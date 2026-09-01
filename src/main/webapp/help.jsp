@@ -52,5 +52,18 @@
         Sunrise Dental Management System &copy; 2026 <br>
         Designed By: <b>Badrajith D Kumarasinghe</b>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            window.history.pushState(null, null, window.location.href);
+            window.onpopstate = function () {
+                window.history.pushState(null, null, window.location.href);
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Action Blocked!',
+                    text: "For security reasons, the browser's back button is disabled. Please use the system navigation buttons.",
+                    confirmButtonColor: '#00796b'
+                });
+            };
+        </script>
 </body>
 </html>

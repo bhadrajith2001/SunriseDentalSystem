@@ -20,10 +20,9 @@ public class LoginServlet extends HttpServlet {
         User loggedUser = userDAO.authenticateUser(uname, pass);
 
         if (loggedUser != null) {
-            // Session created securely
             HttpSession session = request.getSession();
             session.setAttribute("activeUser", loggedUser);
-            response.sendRedirect("dashboard.jsp");
+            response.sendRedirect("dashboard.jsp?login=success");
         } else {
             // Send back to login with error
             response.sendRedirect("index.jsp?error=invalid");

@@ -177,6 +177,14 @@
             <a href="patients_hub.jsp" class="card" style="border-top-color: #29b6f6; color: #0277bd;">
                 <h3>Patients Hub</h3><p>View & manage patient records</p>
             </a>
+
+            <%-- Admin-only Staff Management Card --%>
+            <% if ("ADMIN".equalsIgnoreCase(activeUser.getRole())) { %>
+                <a href="manage_staff.jsp" class="card" style="border-top-color: #ab47bc; color: #6a1b9a;">
+                    <h3>Manage Staff</h3><p>Register & manage system users</p>
+                </a>
+            <% } %>
+
             <a href="help.jsp" class="card" style="border-top-color: #9ccc65; color: #558b2f;">
                 <h3>System Help</h3><p>Guidelines for Staff Members</p>
             </a>

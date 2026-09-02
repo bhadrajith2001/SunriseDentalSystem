@@ -16,7 +16,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sunrise Dental Clinic - Login</title>
+    <title>Sunrise Dental Clinic - Staff Portal Login</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -156,6 +156,16 @@
         .error-msg { display: block; }
         <% } %>
 
+        .info-note {
+            margin-top: 20px;
+            font-size: 0.82rem;
+            color: #78909c;
+            background: #f9fbe7;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px dashed #c0ca33;
+        }
+
         .footer {
             text-align: center;
             padding: 20px;
@@ -208,6 +218,10 @@
 
                 <button type="submit" class="login-btn">Secure Login</button>
             </form>
+
+            <div class="info-note">
+                <b>Note:</b> Authorized staff members only. Contact System Admin for credentials or account creation.
+            </div>
         </div>
     </div>
 

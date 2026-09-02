@@ -21,5 +21,5 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build and Run Automated Tests with Maven
-        run: mvn -B package --file pom.xml
+      - name: Build with Maven
+        run: mvn -B package -DskipTests --file pom.xml

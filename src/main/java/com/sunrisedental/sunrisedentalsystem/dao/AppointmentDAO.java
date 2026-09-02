@@ -12,19 +12,20 @@ public class AppointmentDAO {
     // 1. Method to Add a New Appointment
     public boolean addAppointment(Appointment app) {
         boolean isSuccess = false;
-        // Note: We don't insert total_cost here because our MySQL Trigger calculates it automatically! (Advanced DB Feature)
-        String query = "INSERT INTO appointments (patient_name, address, contact_number, dentist_name, treatment_id, appointment_date, appointment_time) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        // Updated query to include email and shift parameters
+        String query = "INSERT INTO appointments (patient_name, email, address, contact_number, dentist_name, treatment_id, appointment_date, appointment_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pst = conn.prepareStatement(query)) {
 
             pst.setString(1, app.getPatientName());
-            pst.setString(2, app.getAddress());
-            pst.setString(3, app.getContactNumber());
-            pst.setString(4, app.getDentistName());
-            pst.setInt(5, app.getTreatmentId());
-            pst.setDate(6, app.getAppointmentDate());
-            pst.setTime(7, app.getAppointmentTime());
+            pst.setString(2, app.getEmail());
+            pst.setString(3, app.getAddress());
+            pst.setString(4, app.getContactNumber());
+            pst.setString(5, app.getDentistName());
+            pst.setInt(6, app.getTreatmentId());
+            pst.setDate(7, app.getAppointmentDate());
+            pst.setTime(8, app.getAppointmentTime());
 
             int rows = pst.executeUpdate();
             if (rows > 0) isSuccess = true;
@@ -38,8 +39,7 @@ public class AppointmentDAO {
     // 2. Method to Get All Appointments (For Dashboard and Billing)
     public List<Appointment> getAllAppointments() {
         List<Appointment> list = new ArrayList<>();
-        // Using SQL JOIN to get the treatment_name from treatments table
-        String query = "SELECT a.*, t.treatment_name FROM appointments a JOIN treatments t ON a.treatment_id = t.treatment_id ORDER BY a.appointment_date DESC";
+        String query = "SELECT a.*, t.treatment_name FROM appointments a JOIN treatments t ON a.treatment_id = t.treatment_id ORDER BY a.appointment_no DESC";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pst = conn.prepareStatement(query);
@@ -49,6 +49,7 @@ public class AppointmentDAO {
                 Appointment app = new Appointment();
                 app.setAppointmentNo(rs.getInt("appointment_no"));
                 app.setPatientName(rs.getString("patient_name"));
+                app.setEmail(rs.getString("email")); // Fetching email from DB
                 app.setAddress(rs.getString("address"));
                 app.setContactNumber(rs.getString("contact_number"));
                 app.setDentistName(rs.getString("dentist_name"));
@@ -56,7 +57,7 @@ public class AppointmentDAO {
                 app.setTreatmentName(rs.getString("treatment_name"));
                 app.setAppointmentDate(rs.getDate("appointment_date"));
                 app.setAppointmentTime(rs.getTime("appointment_time"));
-                app.setTotalCost(rs.getDouble("total_cost")); // Fetched from DB Trigger calculation
+                app.setTotalCost(rs.getDouble("total_cost"));
                 list.add(app);
             }
         } catch (SQLException e) {
@@ -64,6 +65,7 @@ public class AppointmentDAO {
         }
         return list;
     }
+
     // 3. Method to Get a Single Appointment by ID (For Printing the Bill)
     public Appointment getAppointmentById(int id) {
         Appointment app = null;
@@ -78,6 +80,7 @@ public class AppointmentDAO {
                     app = new Appointment();
                     app.setAppointmentNo(rs.getInt("appointment_no"));
                     app.setPatientName(rs.getString("patient_name"));
+                    app.setEmail(rs.getString("email")); // Fetching email from DB
                     app.setAddress(rs.getString("address"));
                     app.setContactNumber(rs.getString("contact_number"));
                     app.setDentistName(rs.getString("dentist_name"));
@@ -92,6 +95,7 @@ public class AppointmentDAO {
         }
         return app;
     }
+
     // Method to Delete Patient Appointment Record
     public boolean deleteAppointment(int id) {
         boolean success = false;
@@ -109,19 +113,21 @@ public class AppointmentDAO {
     // Method to Update Existing Appointment
     public boolean updateAppointment(Appointment app) {
         boolean isSuccess = false;
-        String query = "UPDATE appointments SET patient_name = ?, address = ?, contact_number = ?, dentist_name = ?, treatment_id = ?, appointment_date = ?, appointment_time = ? WHERE appointment_no = ?";
+        // Updated query to include email
+        String query = "UPDATE appointments SET patient_name = ?, email = ?, address = ?, contact_number = ?, dentist_name = ?, treatment_id = ?, appointment_date = ?, appointment_time = ? WHERE appointment_no = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pst = conn.prepareStatement(query)) {
 
             pst.setString(1, app.getPatientName());
-            pst.setString(2, app.getAddress());
-            pst.setString(3, app.getContactNumber());
-            pst.setString(4, app.getDentistName());
-            pst.setInt(5, app.getTreatmentId());
-            pst.setDate(6, app.getAppointmentDate());
-            pst.setTime(7, app.getAppointmentTime());
-            pst.setInt(8, app.getAppointmentNo());
+            pst.setString(2, app.getEmail());
+            pst.setString(3, app.getAddress());
+            pst.setString(4, app.getContactNumber());
+            pst.setString(5, app.getDentistName());
+            pst.setInt(6, app.getTreatmentId());
+            pst.setDate(7, app.getAppointmentDate());
+            pst.setTime(8, app.getAppointmentTime());
+            pst.setInt(9, app.getAppointmentNo());
 
             if (pst.executeUpdate() > 0) isSuccess = true;
 
@@ -130,6 +136,4 @@ public class AppointmentDAO {
         }
         return isSuccess;
     }
-
-
 }

@@ -11,6 +11,10 @@ import java.sql.ResultSet;
 public class UserDAO {
     // Method to authenticate user during Login
     public User authenticateUser(String username, String password) {
+        if (username == null || password == null || username.trim().isEmpty() || password.trim().isEmpty()) {
+            return null;
+        }
+
         User user = null;
         String hashedPassword = MD5Utils.getMd5(password); // Hash the inputted password
 
@@ -21,15 +25,16 @@ public class UserDAO {
 
             pst.setString(1, username);
             pst.setString(2, hashedPassword);
-            ResultSet rs = pst.executeQuery();
 
-            if (rs.next()) {
-                user = new User(
-                        rs.getInt("user_id"),
-                        rs.getString("username"),
-                        rs.getString("password_hash"),
-                        rs.getString("role")
-                );
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    user = new User(
+                            rs.getInt("user_id"),
+                            rs.getString("username"),
+                            rs.getString("password_hash"),
+                            rs.getString("role")
+                    );
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

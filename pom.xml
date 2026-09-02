@@ -17,10 +17,8 @@
         <junit.version>5.10.2</junit.version>
     </properties>
 
-    <!-- සියලුම dependencies මේ ටැග් එක ඇතුලේ තියෙන්න ඕනේ -->
     <dependencies>
 
-        <!-- Servlet API (Tomcat 10 සඳහා අනිවාර්යයි) -->
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
@@ -41,6 +39,21 @@
             <artifactId>jakarta.servlet.jsp-api</artifactId>
             <version>3.1.1</version>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- Jakarta Mail API for sending emails -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>jakarta.mail</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+
+        <!-- JUnit 5 Dependency for Automated Testing -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.9.2</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

@@ -11,9 +11,24 @@ import java.io.IOException;
 @WebServlet("/DeleteAppointmentServlet")
 public class DeleteAppointmentServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
-        AppointmentDAO dao = new AppointmentDAO();
-        dao.deleteAppointment(id);
-        response.sendRedirect("patients_hub.jsp?status=deleted");
+        try {
+            String idParam = request.getParameter("id");
+            if (idParam != null && !idParam.isEmpty()) {
+                int id = Integer.parseInt(idParam);
+                AppointmentDAO dao = new AppointmentDAO();
+                boolean success = dao.deleteAppointment(id);
+
+                if (success) {
+                    response.sendRedirect("patients_hub.jsp?status=deleted");
+                } else {
+                    response.sendRedirect("patients_hub.jsp?status=failed");
+                }
+            } else {
+                response.sendRedirect("patients_hub.jsp?status=invalid");
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            response.sendRedirect("patients_hub.jsp?status=invalid");
+        }
     }
 }

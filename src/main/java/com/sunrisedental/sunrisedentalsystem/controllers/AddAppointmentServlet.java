@@ -15,24 +15,56 @@ import java.sql.Time;
 public class AddAppointmentServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        Appointment app = new Appointment();
-        app.setPatientName(request.getParameter("patientName"));
-        app.setAddress(request.getParameter("address"));
-        app.setContactNumber(request.getParameter("contactNumber"));
-        app.setDentistName(request.getParameter("dentistName"));
-        app.setTreatmentId(Integer.parseInt(request.getParameter("treatmentId")));
+        // Ensure proper encoding for special characters
+        request.setCharacterEncoding("UTF-8");
 
-        // Parsing Date and Time properly
-        app.setAppointmentDate(Date.valueOf(request.getParameter("appointmentDate")));
-        // Adding ":00" for seconds as HTML time input only sends HH:MM
-        app.setAppointmentTime(Time.valueOf(request.getParameter("appointmentTime") + ":00"));
+        try {
+            Appointment app = new Appointment();
+            app.setPatientName(request.getParameter("patientName"));
+            app.setAddress(request.getParameter("address"));
+            app.setContactNumber(request.getParameter("contactNumber"));
+            app.setEmail(request.getParameter("email")); // ඊමේල් එක ලබාගැනීම
+            app.setDentistName(request.getParameter("dentistName"));
 
-        AppointmentDAO dao = new AppointmentDAO();
-        boolean success = dao.addAppointment(app);
+            String treatmentId = request.getParameter("treatmentId");
+            if (treatmentId != null && !treatmentId.isEmpty()) {
+                app.setTreatmentId(Integer.parseInt(treatmentId));
+            }
 
-        if (success) {
-            response.sendRedirect("dashboard.jsp?status=added");
-        } else {
+            // Parsing Date safely
+            String dateStr = request.getParameter("appointmentDate");
+            if (dateStr != null && !dateStr.isEmpty()) {
+                app.setAppointmentDate(Date.valueOf(dateStr));
+            }
+
+            // Safe Time Parsing (handles missing seconds or empty checks)
+            String timeStr = request.getParameter("appointmentTime");
+            if (timeStr != null && !timeStr.isEmpty()) {
+                if (timeStr.length() == 5) {
+                    timeStr += ":00";
+                }
+                app.setAppointmentTime(Time.valueOf(timeStr));
+            }
+
+            AppointmentDAO dao = new AppointmentDAO();
+            boolean success = dao.addAppointment(app);
+
+            if (success) {
+                final String pEmail = app.getEmail();
+                final String pName = app.getPatientName();
+                final String pDate = dateStr;
+                final String pTime = timeStr;
+
+                new Thread(() -> {
+                    com.sunrisedental.sunrisedentalsystem.utils.EmailUtility.sendAppointmentConfirmation(pEmail, pName, pDate, pTime);
+                }).start();
+
+                response.sendRedirect("dashboard.jsp?status=added");
+            } else {
+                response.sendRedirect("add_appointment.jsp?status=failed");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             response.sendRedirect("add_appointment.jsp?status=failed");
         }
     }

@@ -33,7 +33,7 @@
         .logout-btn:hover { background: #c62828; }
         .main-container { flex: 1; padding: 40px 5%; width: 100%; max-width: 1300px; margin: 0 auto; }
 
-        /* Stats Box for 70-100 Band */
+        /* Stats Box */
         .stats-container { display: flex; gap: 20px; margin-bottom: 30px; flex-wrap: wrap; }
         .stat-box { flex: 1; min-width: 200px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid #00796b; }
         .stat-box h4 { color: #607d8b; font-size: 0.9rem; margin-bottom: 5px; text-transform: uppercase; }
@@ -49,20 +49,42 @@
         .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
         .table-header h3 { color: #37474f; font-size: 1.2rem; }
 
-        /* Search Bar */
-        .search-bar { padding: 10px 15px; border: 1px solid #cfd8dc; border-radius: 8px; width: 100%; max-width: 300px; outline: none; transition: 0.3s; }
+        /* Search Bar with Icon wrapper */
+        .search-box-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 320px;
+        }
+        .search-bar {
+            padding: 10px 15px 10px 40px;
+            border: 1px solid #cfd8dc;
+            border-radius: 8px;
+            width: 100%;
+            outline: none;
+            transition: 0.3s;
+            font-size: 0.95rem;
+        }
         .search-bar:focus { border-color: #00796b; box-shadow: 0 0 5px rgba(0,121,107,0.2); }
+        .search-icon {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #90a4ae;
+            pointer-events: none;
+        }
 
         .table-responsive { width: 100%; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        table { width: 100%; border-collapse: collapse; min-width: 850px; }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eceff1; font-size: 0.95rem; }
         th { background-color: #e0f2f1; color: #004d40; font-weight: 600; }
         tr:hover { background-color: #f9fbe7; }
-        .status-msg { background: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 8px; margin-bottom: 25px; text-align: center; font-weight: 500; border: 1px solid #c8e6c9; }
+
         .btn-print { background: #fb8c00; color: white; padding: 8px 14px; text-decoration: none; border-radius: 6px; font-size: 0.85rem; font-weight: 500; transition: 0.3s; display: inline-block; }
         .btn-print:hover { background: #e65100; }
         .footer { text-align: center; padding: 20px; color: #607d8b; font-size: 0.85rem; font-weight: 500; background: #ffffff; border-top: 1px solid #eceff1; }
     </style>
+
     <% if ("success".equals(request.getParameter("login"))) { %>
         <script>
             window.addEventListener('DOMContentLoaded', (event) => {
@@ -73,9 +95,46 @@
                     timer: 2000,
                     showConfirmButton: false
                 });
+                window.history.replaceState({}, document.title, window.location.pathname);
             });
         </script>
-        <% } %>
+    <% } else if ("added".equals(request.getParameter("status"))) { %>
+        <script>
+            window.addEventListener('DOMContentLoaded', (event) => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Appointment Registered!',
+                    text: 'New patient appointment has been successfully added.',
+                    confirmButtonColor: '#00796b'
+                });
+                window.history.replaceState({}, document.title, window.location.pathname);
+            });
+        </script>
+    <% } else if ("updated".equals(request.getParameter("status"))) { %>
+        <script>
+            window.addEventListener('DOMContentLoaded', (event) => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Record Updated!',
+                    text: 'Appointment details were updated successfully.',
+                    confirmButtonColor: '#00796b'
+                });
+                window.history.replaceState({}, document.title, window.location.pathname);
+            });
+        </script>
+    <% } else if ("deleted".equals(request.getParameter("status"))) { %>
+        <script>
+            window.addEventListener('DOMContentLoaded', (event) => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Record Deleted!',
+                    text: 'The patient appointment has been removed.',
+                    confirmButtonColor: '#00796b'
+                });
+                window.history.replaceState({}, document.title, window.location.pathname);
+            });
+        </script>
+    <% } %>
 </head>
 <body>
     <div class="navbar">
@@ -88,10 +147,6 @@
     </div>
 
     <div class="main-container">
-        <% if ("added".equals(request.getParameter("status"))) { %>
-            <div class="status-msg">✅ New Appointment Successfully Registered!</div>
-        <% } %>
-
         <%
             AppointmentDAO dao = new AppointmentDAO();
             List<Appointment> appList = dao.getAllAppointments();
@@ -130,15 +185,26 @@
         <div class="table-section">
             <div class="table-header">
                 <h3>Recent Appointments Overview</h3>
-                <!-- Search Bar functionality -->
-                <input type="text" id="searchInput" class="search-bar" onkeyup="searchTable()" placeholder="Search by App No or Name...">
+                <!-- Search Bar with Icon -->
+                <div class="search-box-wrapper">
+                    <span class="search-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </span>
+                    <input type="text" id="searchInput" class="search-bar" onkeyup="searchTable()" placeholder="Search by App No or Name...">
+                </div>
             </div>
 
             <div class="table-responsive">
                 <table id="appointmentsTable">
                     <thead>
                         <tr>
-                            <th>App. No</th><th>Patient Name</th><th>Contact</th><th>Treatment</th><th>Date & Time</th><th>Total Bill</th><th>Action</th>
+                            <th>App. No</th>
+                            <th>Patient Name</th>
+                            <th>Contact</th>
+                            <th>Treatment</th>
+                            <th>Date & Time</th>
+                            <th>Total Bill</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -170,15 +236,23 @@
     </div>
 
     <script>
-        // JS Search Function
+        // Safe JS Search Function
         function searchTable() {
             let input = document.getElementById("searchInput").value.toUpperCase();
-            let tr = document.getElementById("appointmentsTable").getElementsByTagName("tr");
+            let table = document.getElementById("appointmentsTable");
+            let tr = table.getElementsByTagName("tr");
             for (let i = 1; i < tr.length; i++) {
                 let tdID = tr[i].getElementsByTagName("td")[0];
                 let tdName = tr[i].getElementsByTagName("td")[1];
+
+                if (tdID && tdID.hasAttribute("colspan")) {
+                    continue;
+                }
+
                 if (tdID || tdName) {
-                    let txtValue = (tdID.textContent || tdID.innerText) + " " + (tdName.textContent || tdName.innerText);
+                    let idText = tdID ? (tdID.textContent || tdID.innerText) : "";
+                    let nameText = tdName ? (tdName.textContent || tdName.innerText) : "";
+                    let txtValue = idText + " " + nameText;
                     tr[i].style.display = txtValue.toUpperCase().indexOf(input) > -1 ? "" : "none";
                 }
             }

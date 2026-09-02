@@ -1,5 +1,4 @@
 <%@ page import="com.sunrisedental.sunrisedentalsystem.models.User" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     // Security to prevent Back Button issue
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -12,6 +11,7 @@
         return;
     }
 %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,6 +58,7 @@
             padding: 40px 20px;
             display: flex;
             justify-content: center;
+            align-items: center;
         }
 
         .form-wrapper {
@@ -148,6 +149,20 @@
 </head>
 <body>
 
+    <!-- Check if registration failed via URL status -->
+    <% if ("failed".equals(request.getParameter("status"))) { %>
+        <script>
+            window.addEventListener('DOMContentLoaded', (event) => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Registration Failed!',
+                    text: 'Please check the details and try again.',
+                    confirmButtonColor: '#00796b'
+                });
+            });
+        </script>
+    <% } %>
+
     <div class="navbar">
         <h2>Sunrise Dental Clinic</h2>
         <a href="dashboard.jsp" class="back-btn">← Back to Dashboard</a>
@@ -156,12 +171,6 @@
     <div class="main-container">
         <div class="form-wrapper">
             <h3>Register New Appointment</h3>
-
-            <% if ("failed".equals(request.getParameter("status"))) { %>
-                <div style="color: #c62828; background: #ffebee; padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 20px;">
-                    Failed to save appointment. Please try again!
-                </div>
-            <% } %>
 
             <form action="AddAppointmentServlet" method="POST" onsubmit="return validateForm()">
 
@@ -177,12 +186,18 @@
                     </div>
                 </div>
 
-                <div class="input-group" style="margin-bottom: 20px;">
-                    <label>Patient Address</label>
-                    <textarea name="address" rows="2" required placeholder="Enter full address"></textarea>
+                <div class="form-row">
+                    <div class="input-group" style="margin-bottom: 0;">
+                        <label>Patient Address</label>
+                        <textarea name="address" rows="2" required placeholder="Enter full address"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <input type="email" name="email" id="email" required placeholder="patient@example.com">
+                    </div>
                 </div>
 
-                <div class="form-row">
+                <div class="form-row" style="margin-top: 20px;">
                     <div class="input-group">
                         <label>Dentist Name</label>
                         <select name="dentistName" required>
@@ -214,7 +229,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="submit-btn">Save Appointment</button>
+                <button type="submit" class="submit-btn" id="saveBtn">Save Appointment</button>
             </form>
         </div>
     </div>
@@ -224,7 +239,7 @@
         Designed By: <b>Badrajith D Kumarasinghe</b>
     </div>
 
-    <!-- Client-Side Validation Script -->
+    <!-- Client-Side Validation & Success Popup Script -->
     <script>
         // Set minimum date to today
         let today = new Date().toISOString().split('T')[0];
@@ -252,23 +267,35 @@
                 document.getElementById("dateError").style.display = "none";
             }
 
+            if (isValid) {
+                // Show gorgeous SweetAlert success loading/feedback before submitting
+                Swal.fire({
+                    title: 'Saving Appointment...',
+                    text: 'Please wait while we record the details.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+            }
+
             return isValid;
         }
-        // Prevent Browser Back Button with SweetAlert2
-                window.history.pushState(null, null, window.location.href);
-                window.onpopstate = function () {
-                    window.history.pushState(null, null, window.location.href);
 
-                    // Modern Custom Popup instead of boring browser alert
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Action Blocked!',
-                        text: "For security reasons, the browser's back button is disabled. Please use the 'Back to Dashboard' button.",
-                        confirmButtonColor: '#00796b',
-                        background: '#ffffff',
-                        backdrop: `rgba(0,0,0,0.4)`
-                    });
-                };
+        // Prevent Browser Back Button with SweetAlert2 ---
+        window.history.pushState(null, null, window.location.href);
+        window.onpopstate = function () {
+            window.history.pushState(null, null, window.location.href);
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Action Blocked!',
+                text: "For security reasons, the browser's back button is disabled. Please use the 'Back to Dashboard' button.",
+                confirmButtonColor: '#00796b',
+                background: '#ffffff',
+                backdrop: `rgba(0,0,0,0.4)`
+            });
+        };
     </script>
 </body>
 </html>

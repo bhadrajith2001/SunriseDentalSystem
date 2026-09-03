@@ -5,10 +5,9 @@ import jakarta.mail.internet.*;
 import java.util.Properties;
 
 public class EmailUtility {
-    // ඊමේල් යැවීමේ Method එක
     public static void sendAppointmentConfirmation(String recipientEmail, String patientName, String date, String time) {
-        final String senderEmail = "badrajithpramod@gmail.com"; // මෙතැනට ඔයාගේ ටෙස්ටින් Gmail එකක් දෙන්න
-        final String senderPassword = "hwkikrkyflerqoqr"; // Gmail එකේ 2-Step Verification ඔන් කරලා ගන්න 'App Password' එක මෙතනට දෙන්න
+        final String senderEmail = "badrajithpramod@gmail.com";
+        final String senderPassword = "hwkikrkyflerqoqr";
 
         Properties properties = new Properties();
         properties.put("mail.smtp.auth", "true");
@@ -28,7 +27,6 @@ public class EmailUtility {
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
             message.setSubject("Appointment Confirmation - Sunrise Dental Clinic");
 
-            // ඊමේල් එකේ අන්තර්ගතය (HTML Design)
             String emailContent = "<div style='font-family: Arial, sans-serif; padding: 20px; color: #333;'>"
                     + "<h2 style='color: #00796b;'>Sunrise Dental Clinic</h2>"
                     + "<h3>Dear " + patientName + ",</h3>"

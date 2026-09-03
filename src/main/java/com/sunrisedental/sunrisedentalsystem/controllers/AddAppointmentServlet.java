@@ -23,7 +23,7 @@ public class AddAppointmentServlet extends HttpServlet {
             app.setPatientName(request.getParameter("patientName"));
             app.setAddress(request.getParameter("address"));
             app.setContactNumber(request.getParameter("contactNumber"));
-            app.setEmail(request.getParameter("email")); // ඊමේල් එක ලබාගැනීම
+            app.setEmail(request.getParameter("email"));
             app.setDentistName(request.getParameter("dentistName"));
 
             String treatmentId = request.getParameter("treatmentId");
